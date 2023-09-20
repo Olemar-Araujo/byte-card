@@ -9,38 +9,38 @@ class Cartao:
         self.__limite = limite
         self.__cliente = cliente
         self.__status = 'ATIVO'
-        self.id = id
-def cancela(self):
-    self.__status = 'CANCELADO'
-def ativa(self):
-    self.__status = 'ATIVO'
-@property
-def id(self):
-    return self.__id
-@property
-def numero(self):
-    return self.__numero
-@property
-def validade(self):
-    return self.__validade
-@property
-def cvv(self):
-    return self.__cvv
-@property
-def limite(self):
-    return self.__limite
+        self.__id = id
+    def cancela(self):
+        self.__status = 'CANCELADO'
+    def ativa(self):
+        self.__status = 'ATIVO'
+    @property
+    def id(self):
+        return self.__id
+    @property
+    def numero(self):
+        return self.__numero
+    @property
+    def validade(self):
+        return self.__validade
+    @property
+    def cvv(self):
+        return self.__cvv
+    @property
+    def limite(self):
+        return self.__limite
 
-@limite.setter
-def limite(self, limite):
-    self.__limite = limite
-@property
-def cliente(self):
-    return self.__cliente
-@property
-def status(self):
-    return self.__status
-def __str__(self):
-    return f'Cartão(#{self.id}) {self.numero} do(a) {self.cliente} com limite de {self.limite} válido até {self.validade}'
+    @limite.setter
+    def limite(self, limite):
+        self.__limite = limite
+    @property
+    def cliente(self):
+        return self.__cliente
+    @property
+    def status(self):
+        return self.__status
+    def __str__(self):
+        return f'Cartão(#{self.id}) {self.numero} do(a) {self.cliente} com limite de {self.limite} válido até {self.validade}'
 class Compra:
     def __init__(self, valor, data, estabelecimento, categoria, cartao, id = None):
         self.__valor = valor
@@ -49,11 +49,16 @@ class Compra:
         self.__categoria = categoria.strip()
         self.__cartao = cartao
         self.__id = id
-@property
-def valor(self):
-    return self.__valor
-def __str__(self):
-    return f'Compra: {self.__valor} no dia {self.__data} em {self.__estabelecimento} no cartão {self.__cartao.numero}'
+    @property
+    def valor(self):
+        return self.__valor
+    @property
+    def categoria(self):
+        return self.__categoria
+
+
+    def __str__(self):
+        return f'Compra: {self.__valor} no dia {self.__data} em {self.__estabelecimento} no cartão {self.__cartao.numero}'
 class CompraCredito(Compra):
     def __init__(self, valor, data, estabelecimento, categoria, cartao, quantidade_parcelas = 1, id = None):
         super().__init__(valor, data, estabelecimento, categoria, cartao, id)

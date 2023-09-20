@@ -1,6 +1,7 @@
 import use_cases
 
 
+
 todos_os_cartoes = use_cases.lista_cartoes()
 print(f"Cartões pré-cadastrados: {len(todos_os_cartoes)}")
 
@@ -20,3 +21,11 @@ use_cases.cadastra_compra(1, 150.0, "alimentação", "retaurante")
 
 use_cases.cadastra_compra(3, 150, "vestuário", "Nike")
 use_cases.cadastra_compra(3, 230.0, "medicamento", "Farmais")
+
+for compra in use_cases.lista_compras():
+    print(compra)
+
+gastos_por_categoria = use_cases.monta_relatorio_gastos_por_categoria()
+for categoria, total in gastos_por_categoria.items():
+    print("Gastos por categoria: ")
+    print(categoria, "-", total)
