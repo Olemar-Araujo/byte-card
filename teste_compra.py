@@ -1,31 +1,47 @@
-from datetime import datetime, date
+import use_cases
 
-from model import CompraCredito
-from teste_cartao import visa
+todos_os_cartoes = use_cases.lista_cartoes()
+print(f'Cartões pré-cadastrados: {len(todos_os_cartoes)}')
 
+try:
+    use_cases.cadastra_compra(1, 100.0, 'Joalheria', 'Joalheria Jóias do Infinito by Thanos')
+except Exception as e:
+    print(e)
 
+try:
+    use_cases.cadastra_compra(1, 0, 'Alimentação', 'Pizza Dois Pedaços')
+except Exception as e:
+    print(e)
 
-compra_farmacia = CompraCredito(500.0, datetime(2023, 1, 1, 10, 0,
-0), "Farpopular", "Medicamento", visa, 10)
-compra_restaurante = CompraCredito(200.0, datetime(2023, 1, 2,
-12, 15, 0), "BomPrato", "Alimentação", visa, 10)
-compra_supermercado = CompraCredito(700.0, datetime(2023, 2, 3,
-7, 5, 5), "CompreBem", "Alimentação", visa, 10)
+try:
+    use_cases.cadastra_compra(None, 100.0, 'Alimentação', 'Pizza Dois Pedaços')
+except Exception as e:
+    print(e)
 
-print(compra_farmacia)
-print(compra_restaurante)
-print(compra_supermercado)
-print()
+try:
+    use_cases.cadastra_compra(1, 50_000.0, 'Alimentação', 'Pizza Dois Pedaços')
+except Exception as e:
+    print(e)
 
-compra_amazon = CompraCredito(200.0, datetime(2023, 2, 15, 19, 46,
-17), "Amazon", "Casa", visa, 10)
+for compra in use_cases.lista_compras():
+    print(compra)
 
-print(f"Compra a crédito: {compra_farmacia.valor} em {compra_farmacia.quantidade_parcelas} x de {compra_farmacia.valor_parcelas}")
+try:
+    use_cases.cadastra_cartao('Peter Parker', 9)
+except Exception as e:
+    print(e)
 
-print()
+try:
+    use_cases.cadastra_cartao('Peter', 10)
+except Exception as e:
+    print(e)
 
-fatura = [compra_farmacia, compra_restaurante, compra_supermercado, compra_amazon]
-total = 0
-for compra in fatura:
-    total += compra.valor
-print(f'O total da fatura é: {total}')
+try:
+    use_cases.cadastra_cartao(None, 10)
+except Exception as e:
+    print(e)
+
+try:
+    use_cases.cadastra_cartao("P", 10)
+except Exception as e:
+    print(e)

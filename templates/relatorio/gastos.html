@@ -1,0 +1,78 @@
+{% extends 'template.html' %}
+{% block titulo %}
+    <section class="container">
+        <div class="row">
+            <div class="col"></div>
+            <div class="col" style="white-space: nowrap;">
+                <h1>Relatório de gastos por categoria</h1>
+            </div>
+            <div class="col"></div>
+        </div>
+    </section>
+{% endblock %}
+{% block conteudo %}
+    <section class="container mt-5">
+        <form action="{{ url_for('relatorio_gastos') }}" method="GET" autocomplete="off">
+            <div class="row">
+                <div class="col">
+                    <div>
+                        <label for="cartao_id"
+                               class="form-label">Cartão:</label>
+                        <select class="form-control" id="cartao_id"
+                                name="cartao_id">
+                            <option value="">Selecione o
+                                cartão...
+                            </option>
+                            {% for cartao in cartoes %}
+                                <option value="{{ cartao.id }}">{{ cartao.numero }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col">
+                    <label for="fatura_data">
+                        Selecione o mês:
+                        <input class="form-control" type="date" name="fatura_data" id="fatura_data"/>
+                    </label>
+                    <button type="submit" class="btn btn-success">Visualizar</button>
+                </div>
+
+            </div>
+        </form>
+    </section>
+    <section class="container mt-5">
+        {% if not categorias %}
+            <tr>
+                <td colspan="5">Nenhum compra realizada no período.</td>
+            </tr>
+        {% else %}
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Categoria</th>
+                    <th>Valor gasto</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for categoria in categorias %}
+                    <tr>
+                        <td>{{ categoria.categoria }}</td>
+                        <td>R$ {{ categoria.valor }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </section>
+    {% if categorias %}
+        <section class="container mt-5">
+            <div class="row">
+                <div class="col"></div>
+                <div class="col">
+                    <h4>Valor total gasto R$ {{ categorias | sum(attribute='valor') }}</h4>
+                </div>
+                <div class="col"></div>
+            </div>
+        </section>
+    {% endif %}
+{% endblock %}

@@ -1,4 +1,3 @@
-
 from model import Compra, Cartao
 
 visa = Cartao("1234567890123456", "01/2031", "321", 1000.0, "João")

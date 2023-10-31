@@ -40,3 +40,8 @@ try:
     use_cases.cadastro_cartao("l", 10)
 except Exception as e:
     print(e)
+
+try:
+    use_cases.cadastra_compra(1, 100, "Alimentação", "Bom Bife")
+except Exception as e:
+    print(e)

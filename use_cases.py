@@ -1,59 +1,86 @@
-from datetime import date, datetime
-from model import Cartao, Compra, cria_cvv_do_cartao, cria_numero_do_cartao, define_validade_do_cartao
-from collections import defaultdict
+from datetime import date
+from datetime import datetime
+from random import randint
+from dateutil.relativedelta import relativedelta
+from sqlalchemy import select, extract
+from database import db
+from model import Cartao, Compra
 
-banco_compras = []
-cartao1 = Cartao(cria_numero_do_cartao(), date(2031, 1, 31), '321', 1000.0, 'Steve Rogers', id=1)
-cartao2 = Cartao(cria_numero_do_cartao(), date(2035, 5, 31), '789', 2000.0, 'Matt Murdock', id=2)
-cartao3 = Cartao(cria_numero_do_cartao(), date(2029, 5, 31), '887', 10000.0, 'Bruce Wayne', id=3)
 
-banco_cartoes = {
-    cartao1.id: cartao1,
-    cartao2.id: cartao2,
-    cartao3.id: cartao3
-}
+def cria_numero_do_cartao():
+    grupos_de_numeros = [f'{randint(1, 9999):04}' for i in range(4)]
+    return ' '.join(grupos_de_numeros)
 
-sequecia_de_ids = (4)
+
+def cria_cvv_do_cartao():
+    cvv = f'{randint(1, 999):03}'
+    return cvv
+
+
+def define_validade_do_cartao():
+    validade = date.today() + relativedelta(years=4, months=6, day=31)
+    return validade
+
 
 def lista_cartoes():
-    return banco_cartoes.values()
+    comando = select(Cartao).order_by(Cartao.cliente, Cartao.numero)
+    resultado = db.session.scalars(comando)
 
-def pesquisa_cartao_por_id(id):
-    return banco_cartoes.get(id)
+    return list(resultado)
 
-def cadastro_cartao(cliente, limite):
-    global sequecia_de_ids, banco_cartoes
 
+def pesquisa_cartao_por_id(cartao_id):
+    return db.session.get(Cartao, cartao_id)
+
+
+def cadastra_cartao(cliente, limite):
     numero = cria_numero_do_cartao()
     cvv = cria_cvv_do_cartao()
     validade = define_validade_do_cartao()
 
-    novo_cartao = Cartao(numero=numero, validade=validade, cvv=cvv, limite=limite, cliente=cliente, id=sequecia_de_ids)
+    cartao = Cartao(numero=numero, validade=validade, cvv=cvv, limite=limite, cliente=cliente)
 
-    banco_cartoes[novo_cartao.id] = novo_cartao
+    db.session.add(cartao)
+    db.session.commit()
 
-    sequecia_de_ids += 1
-    cartao_id = sequecia_de_ids
 
 def cadastra_compra(cartao_id, valor, categoria, estabelecimento):
-    global sequecia_de_ids, banco_compras
-
     cartao = pesquisa_cartao_por_id(cartao_id)
+    if not cartao:
+        raise ValueError('Cartão não encontrado')
 
     agora = datetime.now()
+    compra = Compra(valor=valor, categoria=categoria, estabelecimento=estabelecimento, cartao=cartao, data=agora)
 
-    nova_compra = Compra(valor=valor, data=agora, estabelecimento=estabelecimento, categoria=categoria,  cartao=cartao, id=sequecia_de_ids)
+    db.session.add(compra)
+    db.session.commit()
 
-    banco_compras.append(nova_compra)
 
-def lista_compras():
-    return banco_compras
+def define_limite(cartao_id, limite):
+    cartao = pesquisa_cartao_por_id(cartao_id)
+    cartao.limite = limite
 
-def monta_relatorio_gastos_por_categoria():
-    gasto_por_categoria = defaultdict(float)
-    for compra in lista_compras():
-        gasto_por_categoria[compra.categoria] += compra.valor
+    db.session.commit()
 
-    return gasto_por_categoria
 
+def altera_status_cartao(cartao_id, operacao):
+    cartao = pesquisa_cartao_por_id(cartao_id)
+    operacao(cartao)
+
+    db.session.commit()
+
+
+def ativa_cartao(cartao_id):
+    altera_status_cartao(cartao_id, lambda c: c.ativa())
+
+
+def cancela_cartao(cartao_id):
+    altera_status_cartao(cartao_id, lambda c: c.cancela())
+
+def listar_compras(cartao_id, data: datetime = None):
+    comando = select(Compra).order_by(Compra.data).where(Compra.cartao_id == cartao_id)
+    if data:
+        comando = comando.filter(extract('month', Compra.data) == data.month)
+    resultado = db.session.scalars(comando)
+    return list(resultado)
 
